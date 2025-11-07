@@ -1,5 +1,6 @@
 package com.leandrour.auth.presentation.register
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -42,6 +45,7 @@ import com.leandrour.core.presentation.designsystem.components.GradientBackgroun
 import com.leandrour.core.presentation.designsystem.components.RuniqueActionButton
 import com.leandrour.core.presentation.designsystem.components.RuniquePasswordTextField
 import com.leandrour.core.presentation.designsystem.components.RuniqueTextField
+import com.leandrour.core.presentation.ui.ObserverAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -50,6 +54,31 @@ fun RegisterScreenRoot(
     onSuccessfulRegistration: () -> Unit,
     viewModel: RegisterViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    ObserverAsEvents(viewModel.events) {event ->
+        when(event) {
+            is RegisterEvent.Error -> {
+                keyboardController?.hide()
+                Toast.makeText(
+                    context,
+                    event.error.asString(context),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            RegisterEvent.RegistrationSuccess -> {
+                keyboardController?.hide()
+                Toast.makeText(
+                    context,
+                    R.string.registration_successful,
+                    Toast.LENGTH_LONG
+                ).show()
+                onSuccessfulRegistration()
+            }
+        }
+    }
+
     RegisterScreen(
         state = viewModel.state,
         onAction = viewModel::onAction
