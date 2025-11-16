@@ -32,6 +32,7 @@ import com.leandrour.core.presentation.designsystem.components.RuniqueOutlinedAc
 import com.leandrour.core.presentation.designsystem.components.RuniqueScaffold
 import com.leandrour.core.presentation.designsystem.components.RuniqueToolbar
 import com.leandrour.run.presentation.R
+import com.leandrour.run.presentation.active_run.maps.TrackerMap
 import com.leandrour.run.presentation.components.RunDataCard
 import com.leandrour.run.presentation.util.hasLocationPermission
 import com.leandrour.run.presentation.util.hasNotificationPermission
@@ -142,6 +143,13 @@ private fun ActiveRunScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
+            TrackerMap(
+                isRunFinished = state.isRunFinished,
+                currentLocation = state.currentLocation,
+                locations = state.runData.locations,
+                onSnapshot = {},
+                modifier = Modifier.fillMaxSize()
+            )
             RunDataCard(
                 elapsedTime = state.elapsedTime,
                 runData = state.runData,
