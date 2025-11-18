@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.zip
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -30,7 +29,9 @@ class RunningTracker(
     private val _runData = MutableStateFlow(RunData())
     val runData = _runData.asStateFlow()
 
-    private val isTracking = MutableStateFlow(false)
+    private val _isTracking = MutableStateFlow(false)
+    val isTracking = _isTracking.asStateFlow()
+
     private val isObservingLocation = MutableStateFlow(false)
 
     private val _elapsedTime = MutableStateFlow(Duration.ZERO)
@@ -49,7 +50,7 @@ class RunningTracker(
         )
 
     init {
-        isTracking
+        _isTracking
             .onEach { isTracking ->
                 if (!isTracking) {
                     val newList = buildList {
@@ -71,7 +72,7 @@ class RunningTracker(
 
         currentLocation
             .filterNotNull()
-            .combineTransform(isTracking) { location, isTracking ->
+            .combineTransform(_isTracking) { location, isTracking ->
                 if (isTracking) {
                     emit(location)
                 }
@@ -113,7 +114,7 @@ class RunningTracker(
     }
 
     fun setIsTracking(tracking: Boolean) {
-        isTracking.value = tracking
+        _isTracking.value = tracking
     }
 
     fun startObservingLocation() {
