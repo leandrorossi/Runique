@@ -5,6 +5,7 @@ import com.leandrour.auth.data.di.authDataModule
 import com.leandrour.auth.presentation.BuildConfig
 import com.leandrour.auth.presentation.di.authViewModelModule
 import com.leandrour.core.data.di.coreDataModule
+import com.leandrour.core.database.di.databaseModule
 import com.leandrour.run.location.di.locationModule
 import com.leandrour.run.presentation.di.runPresentationModule
 import com.leandrour.runique.di.appModule
@@ -35,7 +36,8 @@ class RuniqueApp : Application() {
                 authViewModelModule,
                 coreDataModule,
                 runPresentationModule,
-                locationModule
+                locationModule,
+                databaseModule
             )
         }
     }
