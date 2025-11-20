@@ -6,6 +6,7 @@ import com.leandrour.auth.presentation.BuildConfig
 import com.leandrour.auth.presentation.di.authViewModelModule
 import com.leandrour.core.data.di.coreDataModule
 import com.leandrour.core.database.di.databaseModule
+import com.leandrour.run.data.di.runDataModule
 import com.leandrour.run.location.di.locationModule
 import com.leandrour.run.network.di.networkModule
 import com.leandrour.run.presentation.di.runPresentationModule
@@ -14,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
@@ -31,6 +33,8 @@ class RuniqueApp : Application() {
         startKoin {
             androidLogger()
             androidContext(this@RuniqueApp)
+            workManagerFactory()
+
             modules(
                 appModule,
                 authDataModule,
@@ -39,7 +43,8 @@ class RuniqueApp : Application() {
                 runPresentationModule,
                 locationModule,
                 databaseModule,
-                networkModule
+                networkModule,
+                runDataModule
             )
         }
     }
