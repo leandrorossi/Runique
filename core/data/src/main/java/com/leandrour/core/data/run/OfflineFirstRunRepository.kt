@@ -1,5 +1,6 @@
 package com.leandrour.core.data.run
 
+import com.leandrour.core.data.networking.get
 import com.leandrour.core.database.dao.RunPendingSyncDao
 import com.leandrour.core.database.mappers.toRun
 import com.leandrour.core.domain.SessionStorage
@@ -13,6 +14,10 @@ import com.leandrour.core.domain.util.DataError
 import com.leandrour.core.domain.util.EmptyDataResult
 import com.leandrour.core.domain.util.Result
 import com.leandrour.core.domain.util.asEmptyDataResult
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import io.ktor.client.plugins.plugin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -26,7 +31,8 @@ class OfflineFirstRunRepository(
     private val runPendingSyncDao: RunPendingSyncDao,
     private val sessionStorage: SessionStorage,
     private val syncRunScheduler: SyncRunScheduler,
-    private val applicationScope: CoroutineScope
+    private val applicationScope: CoroutineScope,
+    private val httpClient: HttpClient
 ) : RunRepository {
 
     override fun getRuns(): Flow<List<Run>> {
@@ -68,6 +74,7 @@ class OfflineFirstRunRepository(
                 }.join()
                 Result.Success(Unit)
             }
+
             is Result.Success -> {
                 applicationScope.async {
                     localRunDataSource.upsertRun(remoteResult.data).asEmptyDataResult()
@@ -117,7 +124,7 @@ class OfflineFirstRunRepository(
                 .map {
                     launch {
                         val run = it.run.toRun()
-                        when(remoteRunDataSource.postRun(run, it.mapPictureBytes!!)) {
+                        when (remoteRunDataSource.postRun(run, it.mapPictureBytes!!)) {
                             is Result.Error<*> -> Unit
                             is Result.Success<*> -> {
                                 applicationScope.launch {
@@ -132,7 +139,7 @@ class OfflineFirstRunRepository(
                 .await()
                 .map {
                     launch {
-                        when(remoteRunDataSource.deleteRun(it.runId)) {
+                        when (remoteRunDataSource.deleteRun(it.runId)) {
                             is Result.Error<*> -> Unit
                             is Result.Success<*> -> {
                                 applicationScope.launch {
@@ -148,4 +155,19 @@ class OfflineFirstRunRepository(
         }
     }
 
+    override suspend fun deleteAllRuns() {
+        localRunDataSource.deleteAllRuns()
+    }
+
+    override suspend fun logout(): EmptyDataResult<DataError.Network> {
+        val result = httpClient.get<Unit>(
+            route = "/logout"
+        ).asEmptyDataResult()
+
+        httpClient.plugin(Auth).providers.filterIsInstance<BearerAuthProvider>()
+            .firstOrNull()
+            ?.clearToken()
+
+        return result
+    }
 }
