@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class RunOverviewViewModel(
-    private val runRepository: RunRepository
+    private val runRepository: RunRepository,
 ) : ViewModel() {
 
     var state by mutableStateOf(RunOverviewState())
@@ -25,6 +25,7 @@ class RunOverviewViewModel(
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
+            runRepository.syncPendingRuns()
             runRepository.fetchRuns()
         }
     }
