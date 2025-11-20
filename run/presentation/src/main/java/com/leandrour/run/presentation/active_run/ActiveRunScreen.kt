@@ -54,8 +54,8 @@ fun ActiveRunScreenRoot(
     viewModel: ActiveRunViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
-    ObserverAsEvents(flow = viewModel.events) {event ->
-        when(event) {
+    ObserverAsEvents(flow = viewModel.events) { event ->
+        when (event) {
             is ActiveRunEvent.Error -> {
                 Toast.makeText(
                     context,
@@ -63,6 +63,7 @@ fun ActiveRunScreenRoot(
                     Toast.LENGTH_LONG
                 ).show()
             }
+
             ActiveRunEvent.RunSaved -> onFinish()
         }
     }
@@ -70,10 +71,12 @@ fun ActiveRunScreenRoot(
     ActiveRunScreen(
         state = viewModel.state,
         onServiceToggle = onServiceToggle,
-        onAction = {action ->
-            when(action) {
+        onAction = { action ->
+            when (action) {
                 is ActiveRunAction.OnBackClick -> {
-                    onBack()
+                    if (!viewModel.state.hasStartedRunning) {
+                        onBack()
+                    }
                 }
                 else -> Unit
             }
@@ -192,7 +195,7 @@ private fun ActiveRunScreen(
                 isRunFinished = state.isRunFinished,
                 currentLocation = state.currentLocation,
                 locations = state.runData.locations,
-                onSnapshot = {bmp ->
+                onSnapshot = { bmp ->
                     val stream = ByteArrayOutputStream()
                     stream.use {
                         bmp.compress(
@@ -221,7 +224,9 @@ private fun ActiveRunScreen(
             title = stringResource(id = R.string.running_is_paused),
             description = stringResource(id = R.string.resume_or_finish_run),
             onDismiss = {
-                onAction(ActiveRunAction.OnResumeRunClick)
+                if (!state.isSavingRun) {
+                    onAction(ActiveRunAction.OnResumeRunClick)
+                }
             },
             primaryButton = {
                 RuniqueActionButton(
