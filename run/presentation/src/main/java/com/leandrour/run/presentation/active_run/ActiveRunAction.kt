@@ -7,7 +7,7 @@ sealed interface ActiveRunAction {
     data object OnBackClick : ActiveRunAction
     data object DismissRationaleDialog : ActiveRunAction
 
-    class OnRunProcessed(val mapPictureBytes: ByteArray?) : ActiveRunAction
+    class OnRunProcessed(val mapPictureBytes: ByteArray) : ActiveRunAction
 
     data class SubmitLocationPermissionInfo(
         val acceptedLocationPermission: Boolean,

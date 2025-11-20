@@ -7,6 +7,7 @@ import com.leandrour.auth.presentation.di.authViewModelModule
 import com.leandrour.core.data.di.coreDataModule
 import com.leandrour.core.database.di.databaseModule
 import com.leandrour.run.location.di.locationModule
+import com.leandrour.run.network.di.networkModule
 import com.leandrour.run.presentation.di.runPresentationModule
 import com.leandrour.runique.di.appModule
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +38,8 @@ class RuniqueApp : Application() {
                 coreDataModule,
                 runPresentationModule,
                 locationModule,
-                databaseModule
+                databaseModule,
+                networkModule
             )
         }
     }
