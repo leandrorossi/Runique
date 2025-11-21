@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -19,6 +20,7 @@ dependencyResolutionManagement {
     }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "Runique"
 include(":app")
 include(":auth:data")
@@ -34,3 +36,7 @@ include(":run:location")
 include(":run:network")
 include(":run:presentation")
 include(":run:domain")
+include(":analytics:data")
+include(":analytics:presentation")
+include(":analytics:domain")
+include(":analytics:analytics_feature")
