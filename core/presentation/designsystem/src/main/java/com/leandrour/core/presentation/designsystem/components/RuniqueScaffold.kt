@@ -21,7 +21,9 @@ fun RuniqueScaffold(
         floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         if (withGradient) {
-            content(innerPadding)
+            GradientBackground {
+                content(innerPadding)
+            }
         } else {
             content(innerPadding)
         }
