@@ -34,6 +34,7 @@ work = "2.9.0"
 kotlinx-serialization = "1.6.3"
 secretsPlugin = "2.0.1"
 playServicesMaps = "18.2.0"
+featureDelivery = "2.1.0"
 annotation = "1.7.1"
 
 # Project versions
@@ -87,6 +88,8 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-android-play-feature-delivery = { module = "com.google.android.play:feature-delivery", version.ref = "featureDelivery" }
+google-android-play-feature-delivery-ktx = { module = "com.google.android.play:feature-delivery-ktx", version.ref = "featureDelivery" }
 google-maps-android-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps" }
 google-android-gms-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "gmsLocation"}
 org-mongodb-bson = { module = "org.mongodb:bson", version.ref = "bson" }

@@ -31,6 +31,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+    // Dynamic feature delivery
+    implementation(libs.google.android.play.feature.delivery)
+    implementation(libs.google.android.play.feature.delivery.ktx)
+
     // Crypto
     implementation(libs.androidx.security.crypto.ktx)
 
