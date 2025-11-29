@@ -4,7 +4,9 @@ import com.leandrour.core.domain.run.SyncRunScheduler
 import com.leandrour.run.data.CreateRunWorker
 import com.leandrour.run.data.DeleteRunWorker
 import com.leandrour.run.data.FetchRunsWorker
+import com.leandrour.run.data.PhoneToWatchConnector
 import com.leandrour.run.data.SyncRunWorkerScheduler
+import com.leandrour.run.domain.WatchConnector
 import org.koin.androidx.workmanager.dsl.workerOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -16,4 +18,5 @@ val runDataModule = module {
     workerOf(::FetchRunsWorker)
 
     singleOf(::SyncRunWorkerScheduler).bind<SyncRunScheduler>()
+    singleOf(::PhoneToWatchConnector).bind<WatchConnector>()
 }

@@ -13,6 +13,7 @@ import com.leandrour.core.domain.util.Result
 import com.leandrour.core.presentation.ui.asUiText
 import com.leandrour.run.domain.LocationDataCalculator
 import com.leandrour.run.domain.RunningTracker
+import com.leandrour.run.domain.WatchConnector
 import com.leandrour.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,8 @@ import java.time.ZonedDateTime
 
 class ActiveRunViewModel(
     private val runningTracker: RunningTracker,
-    private val runRepository: RunRepository
+    private val runRepository: RunRepository,
+    private val watchConnector: WatchConnector
 ) : ViewModel() {
 
     var state by mutableStateOf(
