@@ -1,7 +1,7 @@
 package com.leandrour.wear.app.presentation
 
 import android.app.Application
-import com.leandrour.core.connectivity.data.coreConnectivityDataModule
+import com.leandrour.core.connectivity.data.di.coreConnectivityDataModule
 import com.leandrour.wear.app.presentation.di.appModule
 import com.leandrour.wear.run.data.di.wearRunDataModule
 import com.leandrour.wear.run.presentation.di.wearRunPresentationModule

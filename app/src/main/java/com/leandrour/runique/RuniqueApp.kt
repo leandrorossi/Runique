@@ -6,7 +6,7 @@ import com.google.android.play.core.splitcompat.SplitCompat
 import com.leandrour.auth.data.di.authDataModule
 import com.leandrour.auth.presentation.BuildConfig
 import com.leandrour.auth.presentation.di.authViewModelModule
-import com.leandrour.core.connectivity.data.coreConnectivityDataModule
+import com.leandrour.core.connectivity.data.di.coreConnectivityDataModule
 import com.leandrour.core.data.di.coreDataModule
 import com.leandrour.core.database.di.databaseModule
 import com.leandrour.run.data.di.runDataModule
