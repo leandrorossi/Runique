@@ -1,6 +1,7 @@
 package com.leandrour.wear.run.data
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
@@ -182,6 +183,7 @@ class HealthServicesExerciseTracker(
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private suspend fun getActiveExerciseInfo(): EmptyDataResult<ExerciseError> {
         val info = client.getCurrentExerciseInfo()
         return when (info.exerciseTrackedStatus) {

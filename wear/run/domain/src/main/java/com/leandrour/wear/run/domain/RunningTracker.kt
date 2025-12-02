@@ -59,11 +59,11 @@ class RunningTracker(
             .onEach { action ->
                 when (action) {
                     MessagingAction.Trackable -> {
-                        _isTracking.value = true
+                        _isTrackable.value = true
                     }
 
                     MessagingAction.Untrackable -> {
-                        _isTracking.value = false
+                        _isTrackable.value = false
                     }
 
                     else -> Unit
@@ -92,7 +92,7 @@ class RunningTracker(
             .launchIn(applicationScope)
     }
 
-    fun setIsTracking(isTrackable: Boolean) {
-        _isTrackable.value = isTrackable
+    fun setIsTracking(isTracking: Boolean) {
+        _isTracking.value = isTracking
     }
 }

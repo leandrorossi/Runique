@@ -29,7 +29,7 @@ class WatchToPhoneConnector(
     private val _connectedNode = MutableStateFlow<DeviceNode?>(null)
     override val connectedNode = _connectedNode.asStateFlow()
 
-    override val messagingActions: Flow<MessagingAction> = nodeDiscovery
+    override val messagingActions = nodeDiscovery
         .observeConnectedDevices(DeviceType.WATCH)
         .flatMapLatest { connectedNodes ->
             val node = connectedNodes.firstOrNull()

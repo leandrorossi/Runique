@@ -45,6 +45,11 @@ class TrackerViewModel(
         phoneConnector
             .connectedNode
             .filterNotNull()
+            .onEach { connectedNode ->
+                state = state.copy(
+                    isConnectedPhoneNearby = connectedNode.isNearby
+                )
+            }
             .combine(isTracking) { _, isTracking ->
                 if (!isTracking) {
                     phoneConnector.sendActionToPhone(MessagingAction.ConnectionRequest)
@@ -53,7 +58,7 @@ class TrackerViewModel(
             .launchIn(viewModelScope)
 
         runningTracker
-            .isTracking
+            .isTrackable
             .onEach { isTrackable ->
                 state = state.copy(isTrackable = isTrackable)
             }
