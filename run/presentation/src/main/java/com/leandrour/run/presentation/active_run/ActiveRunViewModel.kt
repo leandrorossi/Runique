@@ -6,14 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leandrour.core.connectivity.domain.messaging.MessagingAction
 import com.leandrour.core.domain.location.Location
 import com.leandrour.core.domain.run.Run
 import com.leandrour.core.domain.run.RunRepository
 import com.leandrour.core.domain.util.Result
+import com.leandrour.core.notification.ActiveRunService
 import com.leandrour.core.presentation.ui.asUiText
 import com.leandrour.run.domain.LocationDataCalculator
 import com.leandrour.run.domain.RunningTracker
-import com.leandrour.run.presentation.active_run.service.ActiveRunService
+import com.leandrour.run.domain.connectivity.WatchConnector
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,16 +28,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import kotlin.math.roundToInt
 
 class ActiveRunViewModel(
     private val runningTracker: RunningTracker,
-    private val runRepository: RunRepository
+    private val runRepository: RunRepository,
+    private val watchConnector: WatchConnector,
+    private val applicationScope: CoroutineScope
 ) : ViewModel() {
 
     var state by mutableStateOf(
         ActiveRunState(
-            shouldTrack = ActiveRunService.isServiceActive && runningTracker.isTracking.value,
-            hasStartedRunning = ActiveRunService.isServiceActive
+            shouldTrack = ActiveRunService.isServiceActive.value && runningTracker.isTracking.value,
+            hasStartedRunning = ActiveRunService.isServiceActive.value
         )
     )
         private set
@@ -89,9 +95,33 @@ class ActiveRunViewModel(
                 state = state.copy(elapsedTime = it)
             }
             .launchIn(viewModelScope)
+
+        listenToWatchActions()
     }
 
-    fun onAction(action: ActiveRunAction) {
+    fun onAction(action: ActiveRunAction, triggeredOnWatch: Boolean = false) {
+        if (!triggeredOnWatch) {
+            val messagingACtion = when (action) {
+                ActiveRunAction.OnFinishRunClick -> MessagingAction.Finish
+                ActiveRunAction.OnResumeRunClick -> MessagingAction.StartOrResume
+                ActiveRunAction.OnToggleRunClick -> {
+                    if (state.hasStartedRunning) {
+                        MessagingAction.Pause
+                    } else {
+                        MessagingAction.StartOrResume
+                    }
+                }
+
+                else -> null
+            }
+
+            messagingACtion?.let {
+                viewModelScope.launch {
+                    watchConnector.sendActionToWatch(it)
+                }
+            }
+        }
+
         when (action) {
             ActiveRunAction.OnFinishRunClick -> {
                 state = state.copy(
@@ -158,7 +188,17 @@ class ActiveRunViewModel(
                 location = state.currentLocation ?: Location(0.0, 0.0),
                 maxSpeedKmh = LocationDataCalculator.getMaxSpeedKmh(locations),
                 totalElevationMeters = LocationDataCalculator.getTotalElevationMeters(locations),
-                mapPictureUrl = null
+                mapPictureUrl = null,
+                avgHeartRate = if (state.runData.heartRates.isEmpty()) {
+                    null
+                } else {
+                    state.runData.heartRates.average().roundToInt()
+                },
+                maxHeartRate = if (state.runData.heartRates.isEmpty()) {
+                    null
+                } else {
+                    state.runData.heartRates.max()
+                }
             )
 
             runningTracker.finishRun()
@@ -177,9 +217,61 @@ class ActiveRunViewModel(
         }
     }
 
+    private fun listenToWatchActions() {
+        watchConnector
+            .messagingActions
+            .onEach { action ->
+                when (action) {
+                    MessagingAction.ConnectionRequest -> {
+                        if (isTracking.value) {
+                            watchConnector.sendActionToWatch(MessagingAction.StartOrResume)
+                        }
+                    }
+
+                    MessagingAction.Finish -> {
+                        onAction(
+                            action = ActiveRunAction.OnFinishRunClick,
+                            triggeredOnWatch = true
+                        )
+                    }
+
+                    MessagingAction.Pause -> {
+                        if (isTracking.value) {
+                            onAction(
+                                action = ActiveRunAction.OnToggleRunClick,
+                                triggeredOnWatch = true
+                            )
+                        }
+                    }
+
+                    MessagingAction.StartOrResume -> {
+                        if (!isTracking.value) {
+                            if (state.hasStartedRunning) {
+                                onAction(
+                                    action = ActiveRunAction.OnResumeRunClick,
+                                    triggeredOnWatch = true
+                                )
+                            } else {
+                                onAction(
+                                    action = ActiveRunAction.OnToggleRunClick,
+                                    triggeredOnWatch = true
+                                )
+                            }
+                        }
+                    }
+
+                    else -> Unit
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     override fun onCleared() {
         super.onCleared()
-        if (!ActiveRunService.isServiceActive) {
+        if (!ActiveRunService.isServiceActive.value) {
+            applicationScope.launch {
+                watchConnector.sendActionToWatch(MessagingAction.Untrackable)
+            }
             runningTracker.stopObservingLocation()
         }
     }

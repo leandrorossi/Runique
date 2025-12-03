@@ -11,8 +11,8 @@ import androidx.navigation.navDeepLink
 import com.leandrour.auth.presentation.intro.IntroScreenRoot
 import com.leandrour.auth.presentation.login.LoginScreenRoot
 import com.leandrour.auth.presentation.register.RegisterScreenRoot
+import com.leandrour.core.notification.ActiveRunService
 import com.leandrour.run.presentation.active_run.ActiveRunScreenRoot
-import com.leandrour.run.presentation.active_run.service.ActiveRunService
 import com.leandrour.run.presentation.run_overview.RunOverviewScreenRoot
 
 @Composable
