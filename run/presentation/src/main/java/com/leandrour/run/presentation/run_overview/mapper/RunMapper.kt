@@ -2,6 +2,7 @@ package com.leandrour.run.presentation.run_overview.mapper
 
 import com.leandrour.core.domain.run.Run
 import com.leandrour.core.presentation.ui.formatted
+import com.leandrour.core.presentation.ui.toFormattedHeartRate
 import com.leandrour.core.presentation.ui.toFormattedKm
 import com.leandrour.core.presentation.ui.toFormattedKmh
 import com.leandrour.core.presentation.ui.toFormattedMeters
@@ -27,6 +28,8 @@ fun Run.toRunUi(): RunUi {
         maxSpeed = maxSpeedKmh.toFormattedKmh(),
         pace = duration.toFormattedPace(distanceKm),
         totalElevation = totalElevationMeters.toFormattedMeters(),
-        mapPictureUrl = mapPictureUrl
+        mapPictureUrl = mapPictureUrl,
+        avgHeartRate = avgHeartRate.toFormattedHeartRate(),
+        maxHeartRate = maxHeartRate.toFormattedHeartRate()
     )
 }

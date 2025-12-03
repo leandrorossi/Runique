@@ -22,7 +22,7 @@ class WearNodeDiscovery(
     override fun observeConnectedDevices(localDeviceType: DeviceType): Flow<Set<DeviceNode>> {
         return callbackFlow {
             val remoteCapabitity = when (localDeviceType) {
-                DeviceType.PHONE -> "runique_watch_app"
+                DeviceType.PHONE -> "runique_wear_app"
                 DeviceType.WATCH -> "runique_phone_app"
             }
 
