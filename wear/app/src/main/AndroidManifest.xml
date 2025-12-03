@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <uses-feature android:name="android.hardware.type.watch" />
 
@@ -28,7 +29,8 @@
             android:name="com.google.android.wearable.standalone"
             android:value="false" />
 
-        <service android:name="com.leandrour.core.notification.ActiveRunService" />
+        <service android:name="com.leandrour.core.notification.ActiveRunService"
+            android:foregroundServiceType="dataSync" />
 
         <activity
             android:name=".presentation.MainActivity"

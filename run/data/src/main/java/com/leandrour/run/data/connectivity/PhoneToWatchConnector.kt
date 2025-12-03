@@ -68,6 +68,7 @@ class PhoneToWatchConnector(
                 } else {
                     MessagingAction.Untrackable
                 }
+                sendActionToWatch(action)
             }
             .launchIn(applicationScope)
     }

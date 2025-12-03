@@ -235,7 +235,6 @@ class ActiveRunViewModel(
                         )
                     }
 
-                    is MessagingAction.HeartRateUpdate -> TODO()
                     MessagingAction.Pause -> {
                         if (isTracking.value) {
                             onAction(
